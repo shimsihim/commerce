@@ -69,6 +69,8 @@ services:
       # [추가] 프로비저닝: InfluxDB 데이터소스를 자동으로 연결
       # ./grafana/provisioning 폴더의 설정이 자동으로 적용됨
       - ./grafana/provisioning:/etc/grafana/provisioning
+      # 대시보드 JSON 파일 자동 올림
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
     depends_on:
       influxdb:
         condition: service_healthy  # InfluxDB가 준비된 후 시작
