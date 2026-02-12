@@ -19,15 +19,15 @@ spring:
     jpa-auditing:
       enabled: true
 
-  # ==========================================
-  # Redis Configuration (환경변수 우선)
-  # ==========================================
-  data:
-    redis:
-      host: ${REDIS_HOST:127.0.0.1}
-      port: ${REDIS_PORT:6379}
-  cache:
-    type: redis
+#  # ==========================================
+#  # Redis Configuration (환경변수 우선)
+#  # ==========================================
+#  data:
+#    redis:
+#      host: ${REDIS_HOST:127.0.0.1}
+#      port: ${REDIS_PORT:6379}
+#  cache:
+#    type: redis
 
   # ==========================================
   # Kafka Configuration (환경변수 우선)
@@ -51,6 +51,50 @@ logging:
   level:
     root: ${LOG_LEVEL_ROOT:INFO}
     io.hhplus.tdd: ${LOG_LEVEL_APP:DEBUG}
+
+# ==========================================
+# Metrics Configuration
+# ==========================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus  # Actuator 엔드포인트 노출
+
+  metrics:
+    export:
+      influx:
+        enabled: true  # Influx export 활성화
+
+    # 메트릭 태그 추가
+    tags:
+      application: ${spring.application.name}
+      environment: ${ENVIRONMENT:dev}  # 환경 구분 (dev, prod 등)
+
+    # 메트릭 활성화
+    enable:
+      jvm: true
+      process: true
+      system: true
+      tomcat: true
+      logback: true
+      hikaricp: true  # DB 사용 시
+
+    # 분포 메트릭 설정 (응답시간 percentile)
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true  # HTTP 요청 히스토그램
+      slo:
+        http.server.requests:  # SLO 정의
+          - 10ms
+          - 50ms
+          - 100ms
+          - 200ms
+          - 500ms
+          - 1s
+          - 2s
+      percentiles:
+        http.server.requests: 0.5,0.95,0.99  # 50%, 95%, 99% percentile
 
 # ==========================================
 # 환경별 설정 방법

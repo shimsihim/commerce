@@ -34,6 +34,9 @@ public class InfluxConfiguration {
     @Value("${spring.application.name:unknown-app}")
     private String appName;
 
+    @Value("${ENVIRONMENT:dev}")
+    private String environment;
+
     /**
      * [1] InfluxDB 연결 설정 (환경변수 적용 + V2 강제)
      */
@@ -60,19 +63,22 @@ public class InfluxConfiguration {
     }
 
     /**
-     * 모든 메트릭에 'application' 이름과 'host' 정보를 자동으로 붙임.
-     * 그라파나에서 서버 식별 가능.
+     * 모든 메트릭에 'application' 이름, 'environment', 'host' 정보를 자동으로 붙임.
+     * 그라파나에서 서버 식별 및 환경 구분 가능.
      */
     @Bean
     public MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
         return registry -> registry.config().commonTags(
                 "application", appName,
+                "environment", environment,
                 "host", getHostName()
         );
     }
 
     /**
-     * HTTP 요청 응답시간에 대해 '상위 95%, 99%' 데이터를 추가로 수집
+     * 메트릭 필터링 설정
+     * - percentile 설정은 application.yml에서 관리됨
+     * - 필요시 특정 메트릭을 필터링할 수 있음
      */
     @Bean
     public MeterFilter meterFilter() {
