@@ -30,6 +30,8 @@ dependencies {
     implementation(libs.mysql.connector)
     implementation("org.springframework.retry:spring-retry")
     implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation(libs.spring.boot.starter.actuator)
+    implementation(libs.micrometer.registry.influx)
 
     // Kafka
     implementation("org.springframework.kafka:spring-kafka")

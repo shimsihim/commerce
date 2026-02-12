@@ -31,28 +31,30 @@ services:
       retries: 5
 
   influxdb:
-    # [추가] InfluxDB 1.8: K6 테스트 결과를 시계열로 저장하는 DB
-    image: influxdb:1.8-alpine
+    image: influxdb:latest
     container_name: ecommerce-api-influxdb
-    hostname: influxdb
     ports:
-      - "8086:8086"   # InfluxDB API 포트
+      - "8086:8086"
     environment:
-      - INFLUXDB_DB=k6                    # k6 결과를 저장할 데이터베이스 이름
-      - INFLUXDB_ADMIN_USER=admin         # 관리자 계정
-      - INFLUXDB_ADMIN_PASSWORD=admin     # 관리자 비밀번호
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin12345
+      - DOCKER_INFLUXDB_INIT_ORG=my-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=my-bucket
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-token
     volumes:
-      - influxdb-data:/var/lib/influxdb   # InfluxDB 데이터 영구 저장
+      - influxdb-data:/var/lib/influxdb2
     networks:
       - ecommerce-network
+    # [수정] InfluxDB 2.x 전용 헬스체크 명령어로 변경
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8086/ping"]
-      interval: 10s
-      timeout: 5s
+      test: "influx ping"
+      interval: 30s
+      timeout: 10s
       retries: 5
 
   grafana:
-    # [추가] Grafana: InfluxDB에 저장된 K6 테스트 결과를 그래프로 시각화
+    # Grafana: InfluxDB에 저장된 애플리케이션 메트릭을 그래프로 시각화
     image: grafana/grafana:latest
     container_name: ecommerce-api-grafana
     ports:

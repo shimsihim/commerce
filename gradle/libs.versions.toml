@@ -58,7 +58,7 @@ h2 = { module = "com.h2database:h2" }
 jackson_kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
 
 micrometer_tracing_bridge_brave = { module = "io.micrometer:micrometer-tracing-bridge-brave" }
-micrometer_registry_prometheus = { module = "io.micrometer:micrometer-registry-prometheus" }
+micrometer_registry_influx = { module = "io.micrometer:micrometer-registry-influx" }
 # test
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 spring_mockk = { module = "com.ninja-squad:springmockk", version.ref = "spring_mockk" }
