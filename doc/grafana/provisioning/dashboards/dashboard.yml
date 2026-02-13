@@ -1,0 +1,14 @@
+# ./grafana/provisioning/dashboards/dashboard.yaml
+
+apiVersion: 1
+
+providers:
+  - name: 'Default'
+    orgId: 1
+    folder: ''
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 10 # 10초마다 파일 변경 감지
+    options:
+      path: /etc/grafana/provisioning/dashboards # 컨테이너 내부 경로 (고정)

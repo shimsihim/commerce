@@ -46,3 +46,4 @@ bin/
 
 
 doc/DEVELOPMENT_GUIDE.md
+application-secret.yml
