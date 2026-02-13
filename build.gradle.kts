@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.spring.boot.starter.aop)
     implementation(libs.spring.boot.starter.jpa)
     implementation(libs.spring.boot.starter.redisson)
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation(libs.mysql.connector)
     implementation("org.springframework.retry:spring-retry")
     implementation("org.springframework.boot:spring-boot-starter-cache")

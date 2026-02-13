@@ -1,10 +1,8 @@
 package io.hhplus.tdd.domain.coupon.application.command;
 
-import io.hhplus.tdd.common.exception.CouponException;
-import io.hhplus.tdd.common.exception.ErrorCode;
-import io.hhplus.tdd.domain.coupon.domain.model.Coupons;
+import io.hhplus.tdd.domain.coupon.domain.model.CouponIssueInfo;
 import io.hhplus.tdd.domain.coupon.domain.model.UserCoupons;
-import io.hhplus.tdd.domain.coupon.infrastructure.repository.CouponsRepository;
+import io.hhplus.tdd.domain.coupon.infrastructure.repository.CouponStockRepository;
 import io.hhplus.tdd.domain.coupon.infrastructure.repository.UserCouponRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,28 +15,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class IssueUserCouponUseCase {
 
     private final UserCouponRepository userCouponRepository;
-    private final CouponsRepository couponsRepository;
+    private final CouponStockRepository couponStockRepository;
 
     public record Input(
             long userId,
-            long couponId
+            long couponId,
+            String issuanceId
     ) {
     }
 
     @Transactional
     public void execute(IssueUserCouponUseCase.Input input) {
-        Coupons coupon = couponsRepository.findByIdForUpdate(input.couponId())
-                .orElseThrow(() -> new CouponException(ErrorCode.COUPON_NOT_FOUND, input.userId(), input.couponId()));
+        // STEP 1: 원자적 검증 + 예약 (재고 차감, 멱등키 확인, 유저별 한도)
+        CouponIssueInfo couponIssueInfo = couponStockRepository.tryIssueCoupon(
+                input.couponId(), input.userId(), input.issuanceId()
+        );
 
-        long userCouponCnt = userCouponRepository.countByUserIdAndCouponId(input.userId(),input.couponId());
-        //1. 쿠폰 발급 가능 검증
-        coupon.validIssue(userCouponCnt , input.userId());
-
-        //2. 쿠폰 개수 -
-        coupon.increaseIssuedQuantity();
-
-        //3. 사용자 쿠폰 추가
-        UserCoupons userCoupons = UserCoupons.from(input.userId() , coupon);
+        // STEP 2: DB 저장
+        UserCoupons userCoupons = UserCoupons.from(input.userId(), couponIssueInfo, input.issuanceId());
         userCouponRepository.save(userCoupons);
     }
 

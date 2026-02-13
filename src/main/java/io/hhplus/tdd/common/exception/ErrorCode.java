@@ -28,6 +28,7 @@ public enum ErrorCode {
     COUPON_USER_EXPIRED(HttpStatus.BAD_REQUEST, "C0005" , "사용자 쿠폰이 만료되었습니다. 사용자 쿠폰 아이디 : %d"),
     COUPON_USER_USED(HttpStatus.BAD_REQUEST, "C0006" , "사용자 쿠폰이 만료되었습니다. 사용자 쿠폰 아이디 : %d"),
     COUPON_MIN_ORDER_VALUE_ERR(HttpStatus.BAD_REQUEST, "C0007" , "최소 주문 금액을 충족하지 않습니다. 쿠폰 아이디 : %d"),
+    COUPON_DUPLICATE_REQUEST(HttpStatus.BAD_REQUEST, "C0008" , "중복된 쿠폰 발급 요청입니다. 쿠폰 아이디 : %d"),
 
 
     ORDER_AMOUNT_MUSE_POSITIVE(HttpStatus.BAD_REQUEST, "O0001" , "최종 금액은 음수가 될 수 없습니다."),

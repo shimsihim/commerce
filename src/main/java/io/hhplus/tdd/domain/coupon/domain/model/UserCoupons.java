@@ -67,6 +67,20 @@ public class UserCoupons extends CreatedBaseEntity {
                 .validUntil(LocalDateTime.now().plusDays(coupon.getDuration()))
                 .build();
     }
+
+    public static UserCoupons from(long userId, CouponIssueInfo info, String issuanceId){
+        return UserCoupons.builder()
+                .userId(userId)
+                .couponId(info.couponId())
+                .type(info.type())
+                .discountValue(info.discountValue())
+                .minOrderAmount(info.minOrderAmount())
+                .maxDiscountAmount(info.maxDiscountAmount())
+                .status(Status.UNUSED)
+                .validUntil(LocalDateTime.now().plusDays(info.duration()))
+                .issuanceId(issuanceId)
+                .build();
+    }
 //
 //    public void useCoupon(){
 //        validUseCoupon();

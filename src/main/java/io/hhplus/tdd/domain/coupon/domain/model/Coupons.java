@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -52,16 +52,16 @@ public class Coupons extends UpdatableBaseEntity {
     private int maxIssuancePerUser;
 
     @Column(nullable = false)
-    private LocalDate validFrom;
+    private LocalDateTime validFrom;
 
     @Column(nullable = false)
-    private LocalDate validUntil;
+    private LocalDateTime validUntil;
 
     @Column(nullable = false)
     private int duration;
 
     public void increaseIssuedQuantity() {
-        if(this.totalQuantity - this.issuedQuantity > 0){
+        if(isCouponRemain()){
             this.issuedQuantity++;
             return;
         }
@@ -82,15 +82,20 @@ public class Coupons extends UpdatableBaseEntity {
     }
 
     public void validIssue(long issuedUserCouponCnt , long userId) {
-        LocalDate now = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
         if (now.isBefore(this.getValidFrom()) || now.isAfter(this.getValidUntil())) {
             throw new CouponException(ErrorCode.COUPON_DURATION_ERR, this.getId());
         }
-        if (this.getTotalQuantity() != null && this.getIssuedQuantity() >= this.getTotalQuantity()) {
+        if (!isCouponRemain()) {
             throw new CouponException(ErrorCode.COUPON_ISSUE_LIMIT, this.getId());
         }
         if(this.maxIssuancePerUser <= issuedUserCouponCnt){
             throw new CouponException(ErrorCode.COUPON_ISSUE_LIMIT_PER_USER, userId);
         }
+    }
+
+
+    private boolean isCouponRemain(){
+        return this.getTotalQuantity() == null || this.getTotalQuantity() > this.getIssuedQuantity();
     }
 }
